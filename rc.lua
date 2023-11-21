@@ -63,12 +63,14 @@ local net_widget = require(widgets_path .. "/net")
 local battery_widget = require(widgets_path .. "/battery")
 
 -- Startup stuff
-awful.util.spawn("nm-applet")
-awful.util.spawn("pa-applet")
+awful.spawn("nm-applet")
+awful.spawn("pa-applet") -- We should find a better way of automating this.
+awful.spawn("xcompmgr")
 --awful.util.spawn("xset -b")
 
 -- This is used later as the default terminal and editor to run.
 terminal = "urxvt"
+shell = "fish"
 editor = os.getenv("EDITOR") or "vim"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -125,7 +127,7 @@ autorandr = {
 mymainmenu = awful.menu({ items = { { "main", myawesomemenu, beautiful.awesome_icon },
                                     { "applications", appmenu },
 				    { "autorandr", autorandr },
-                                    { "open terminal", terminal }
+                                    { "open terminal", terminal .. " -e " .. shell}
                                   }
                         })
 
@@ -337,7 +339,7 @@ globalkeys = gears.table.join(
         {description = "go back", group = "client"}),
 
     -- Standard programf
-    awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end,
+    awful.key({ modkey,           }, "Return", function () awful.spawn(terminal .. " -e " .. shell) end,
               {description = "open a terminal", group = "launcher"}),
     awful.key({ modkey, "Shift" }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
@@ -401,13 +403,13 @@ globalkeys = gears.table.join(
               {description = "show the menubar", group = "launcher"}),
 
     -- Volume Manipulation
-    awful.key({}, "XF86AudioLowerVolume", function () awful.util.spawn("pactl set-sink-volume @DEFAULT_SINK@ -5%", false) end, -- "amixer -q -D pulse sset Master 5%-"
+    awful.key({}, "XF86AudioLowerVolume", function () awful.spawn("pactl set-sink-volume @DEFAULT_SINK@ -5%", false) end, -- "amixer -q -D pulse sset Master 5%-"
               {description = "lower volume", group = "audio"}),
 
-    awful.key({}, "XF86AudioRaiseVolume", function () awful.util.spawn("pactl set-sink-volume @DEFAULT_SINK@ +5%", false) end, --"amixer -q -D pulse sset Master 5%+"
+    awful.key({}, "XF86AudioRaiseVolume", function () awful.spawn("pactl set-sink-volume @DEFAULT_SINK@ +5%", false) end, --"amixer -q -D pulse sset Master 5%+"
               {description = "raise volume", group = "audio"}),
     
-    awful.key({}, "XF86AudioMute", function () awful.util.spawn("amixer -D pulse set Master 1+ toggle", false) end,
+    awful.key({}, "XF86AudioMute", function () awful.spawn("amixer -D pulse set Master 1+ toggle", false) end,
               {description = "mute audio", group = "audio"})
 )
 
@@ -471,6 +473,7 @@ clientkeys = gears.table.join(
             c:raise()
         end ,
         {description = "(un)maximize horizontally", group = "client"})
+
 )
 
 -- Bind all key numbers to tags.
@@ -661,8 +664,22 @@ client.connect_signal("mouse::enter", function(c)
     c:emit_signal("request::activate", "mouse_enter", {raise = false})
 end)
 
-client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
-client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+client.connect_signal("focus", function(c)
+    -- Test if client is a terminal. If so, make the window opaque.
+    if c.class:lower() == terminal then
+        awful.spawn("transset-df 1 -i " .. c.window)
+    end
+    
+    c.border_color = beautiful.border_focus
+end)
+
+client.connect_signal("unfocus", function(c)
+    -- Test if client is urxvt. If so, make the window 80% opaque (slightly translucent)
+    if c.class:lower() == terminal then
+        awful.spawn("transset-df 0.8 -i " .. c.window)
+    end
+    c.border_color = beautiful.border_normal
+end)
 -- }}}
 
 

@@ -105,7 +105,7 @@ local function worker(user_args)
         step_width = step_width,
         step_spacing = step_spacing,
         widget = wibox.widget.graph,
-        color = "linear:0,0:0,50:0,#FF0000:0.3,#FFFF00:0.6," .. color  -- previously 20:0
+        color = "linear:0,0:0,50:0,#FF0000:0.25,#FFFF00:0.75," .. color  -- previously 20:0
     }
 
     -- This timer periodically executes the heavy command while the popup is open.
@@ -233,7 +233,7 @@ local function worker(user_args)
                             background_color = beautiful.bg_normal,
                             bar_border_width = 1,
                             bar_border_color = beautiful.bg_focus,
-                            color = "linear:150,0:0,0:0,#FF0000:0.3,#FFFF00:0.6," .. "#00FF00", --beautiful.fg_normal,
+                            color = "linear:150,0:0,0:0,#FF0000:0.25,#FFFF00:0.75," .. "#00FF00", --beautiful.fg_normal,
                             widget = wibox.widget.progressbar,
 
                         },

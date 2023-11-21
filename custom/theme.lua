@@ -83,7 +83,7 @@ theme.taglist_squares_resize = "true"
 
 -- {{{ Misc
 theme.awesome_icon           = path_custom .. "red_lambda.png"
-theme.menu_submenu_icon      = themes_path .. "default/submenu.png"
+theme.menu_submenu_icon      = path_custom .. "submenu.png"
 -- }}}
 
 -- {{{ Layout
