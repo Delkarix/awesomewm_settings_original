@@ -3,7 +3,7 @@
 --    By Declan C.           --
 -------------------------------
 
-local themes_path = "/home/declan/.config/awesome/themes/" --require("gears.filesystem").get_themes_dir()
+local themes_path = "~/.config/awesome/themes/" --require("gears.filesystem").get_themes_dir()
 local path_custom = themes_path .. "custom/"
 local dpi = require("beautiful.xresources").apply_dpi
 
